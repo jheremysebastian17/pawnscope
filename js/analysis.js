@@ -48,8 +48,24 @@ export function isSacrifice(fenBefore, uci, pvAfter = []) {
   const color = c.turn();
   const before = materialBalance(c, color);
   if (!uciMove(c, uci)) return false;
+  const afterMove = c.fen();
   for (const m of pvAfter.slice(0, 2)) if (!uciMove(c, m)) break;
-  return before - materialBalance(c, color) >= 2;
+  if (before - materialBalance(c, color) >= 2) return true;
+  return offersMaterial(afterMove, color, before);
+}
+
+// "Offered" sacrifice: the opponent may grab >= 2 points even counting our recapture,
+// although the engine says taking is bad (so the PV above never shows the capture).
+function offersMaterial(fenAfterMove, color, before) {
+  const c = new Chess(fenAfterMove);
+  for (const cap of c.moves({ verbose: true }).filter((m) => m.captured)) {
+    c.move(cap);
+    const recapture = c.isAttacked(cap.to, color) ? VALUES[cap.piece] : 0;
+    const net = materialBalance(c, color) + recapture - before;
+    c.undo();
+    if (net <= -2) return true;
+  }
+  return false;
 }
 
 // Builds the position list for a PGN. Returns { headers, moves: [{san, uci, color, fenBefore, fenAfter, legalCount}], fens }.

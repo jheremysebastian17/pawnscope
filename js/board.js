@@ -3,7 +3,7 @@ import { PIECES } from './pieces.js';
 
 // Own palette and standard annotation symbols (!!, !, ?!, ?, ??).
 export const META = {
-  brilliant: { sym: '!!', color: '#19b3a6' },
+  brilliant: { sym: '!!', emoji: '💎', color: '#19b3a6' },
   great: { sym: '!', color: '#3b82f6' },
   best: { sym: '★', color: '#22a35a' },
   excellent: { sym: '✓', color: '#65b741' },
@@ -86,7 +86,7 @@ export function renderBoard(svg, opts) {
     const { x, y } = squareXY(move.to, flip);
     const cx = x + S - 20, cy = y + 20;
     h += `<g class="badge" data-cls="${cls}"><circle cx="${cx}" cy="${cy}" r="19" fill="${meta.color}" stroke="#fff" stroke-width="3"/>
-      <text x="${cx}" y="${cy + 7}" text-anchor="middle" class="badge-sym">${meta.sym}</text></g>`;
+      <text x="${cx}" y="${cy + 7}" text-anchor="middle" class="badge-sym${meta.emoji ? ' emoji' : ''}">${meta.emoji || meta.sym}</text></g>`;
   }
   svg.innerHTML = h;
 }

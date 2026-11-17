@@ -41,6 +41,7 @@ const en = {
 };
 
 const es = {
+  'Sound': 'Sonido',
   'hero.title': 'Revisa tus partidas de Chess.com con Stockfish',
   'hero.lead': 'Cada jugada clasificada, explicada por un analista y dibujada en el tablero. Todo funciona en tu navegador.',
   'foot.note': 'Análisis de Stockfish 18 (GPLv3), ejecutado en local. Sin relación con Chess.com.',
@@ -92,6 +93,7 @@ const es = {
 };
 
 const ca = {
+  'Sound': 'So',
   'hero.title': 'Revisa les teves partides de Chess.com amb Stockfish',
   'hero.lead': "Cada jugada classificada, explicada per un analista i dibuixada al tauler. Tot funciona al teu navegador.",
   'foot.note': 'Anàlisi de Stockfish 18 (GPLv3), executat en local. Sense relació amb Chess.com.',
@@ -142,6 +144,7 @@ const ca = {
 };
 
 const fr = {
+  'Sound': 'Son',
   'hero.title': 'Analysez vos parties Chess.com avec Stockfish',
   'hero.lead': "Chaque coup classé, expliqué par un analyste et dessiné sur l'échiquier. Tout fonctionne dans votre navigateur.",
   'foot.note': 'Analyse par Stockfish 18 (GPLv3), exécuté localement. Sans lien avec Chess.com.',
@@ -192,6 +195,7 @@ const fr = {
 };
 
 const de = {
+  'Sound': 'Ton',
   'hero.title': 'Analysiere deine Chess.com-Partien mit Stockfish',
   'hero.lead': 'Jeder Zug bewertet, von einem Analysten erklärt und auf dem Brett eingezeichnet. Alles läuft in deinem Browser.',
   'foot.note': 'Analyse durch Stockfish 18 (GPLv3), lokal ausgeführt. Keine Verbindung zu Chess.com.',

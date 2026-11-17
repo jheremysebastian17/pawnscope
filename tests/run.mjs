@@ -55,6 +55,14 @@ test('Sacrifice detection', () => {
   const trade = 'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2';
   assert.equal(isSacrifice(trade, 'e4d5', ['d8d5', 'b1c3']), false);
   assert.equal(materialBalance(new Chess(START), 'w'), 0);
+  // Knight left en prise (c6 pawn can take it, nothing recaptures) counts even if the PV declines it.
+  const offer = 'rnbqkbnr/pp1ppppp/2p5/8/8/2N5/PPPPPPPP/R1BQKBNR w KQkq - 0 2';
+  assert.equal(isSacrifice(offer, 'c3d5', ['g8f6', 'd5f6']), true);
+  // Knight to a safe square is not.
+  assert.equal(isSacrifice(offer, 'c3e4', ['d7d5']), false);
+  // Defended piece attacked only by a more valuable piece: no material is offered.
+  const safe = 'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2';
+  assert.equal(isSacrifice(safe, 'b8c6', ['f1b5']), false);
 });
 
 // Helper: builds evals from White-POV cp values (one per position).

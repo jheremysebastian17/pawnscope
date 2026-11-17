@@ -2,7 +2,8 @@ import { parseGame, terminalScore, classifyGame, summarize, winPercent, formatSc
 import { commentMove } from './commentary.js';
 import { fetchRecentGames, openingFromEcoUrl } from './chesscom.js';
 import { Engine } from './engine.js';
-import { renderBoard, META } from './board.js';
+import { renderBoard, META, squareXY } from './board.js';
+import { playMove, playCapture, playBrilliant, brilliantBurst, setMuted, isMuted } from './fx.js';
 import { renderGraph, plyFromEvent } from './graph.js';
 import { LANGS, t, setLang, getLang, fmtNum, fmtDate } from './i18n.js';
 
@@ -24,6 +25,20 @@ $('theme-toggle').addEventListener('click', () => {
   document.documentElement.dataset.theme = next;
   store.set('pawnscope-theme', next);
   syncThemeMeta();
+
+// ---------- Sound ----------
+function syncSound() {
+  $('sound-toggle').setAttribute('aria-pressed', String(!isMuted()));
+  $('sound-toggle').classList.toggle('muted', isMuted());
+}
+$('sound-toggle').addEventListener('click', () => {
+  setMuted(!isMuted());
+  store.set('pawnscope-muted', isMuted() ? '1' : '0');
+  syncSound();
+  if (!isMuted()) playMove(); // audible confirmation
+});
+setMuted(store.get('pawnscope-muted') === '1');
+syncSound();
 });
 syncThemeMeta();
 
@@ -218,8 +233,18 @@ $('depth').addEventListener('change', () => {
 
 function go(ply) {
   if (!review) return;
-  review.ply = Math.max(0, Math.min(review.game.moves.length, ply));
+  const next = Math.max(0, Math.min(review.game.moves.length, ply));
+  if (next === review.ply) return;
+  review.ply = next;
   renderReview();
+  if (next === 0) return;
+  const m = review.game.moves[next - 1];
+  if (review.classified[next - 1]?.cls === 'brilliant') {
+    const { x, y } = squareXY(m.to, review.flip);
+    brilliantBurst($('board-host'), (x + 50) / 800, (y + 50) / 800);
+    playBrilliant();
+  }
+  if (m.captured) playCapture(); else playMove();
 }
 $('nav-first').addEventListener('click', () => go(0));
 $('nav-prev').addEventListener('click', () => go(review.ply - 1));
@@ -274,7 +299,9 @@ function renderReview() {
 
   // Analyst.
   const pill = $('analyst-cls');
-  if (info) { pill.textContent = `${META[info.cls].sym} ${t(`cls.${info.cls}`)}`; pill.style.background = META[info.cls].color; } else pill.textContent = '';
+  if (info) { pill.textContent = `${META[info.cls].emoji || META[info.cls].sym} ${t(`cls.${info.cls}`)}`; pill.style.background = META[info.cls].color; } else pill.textContent = '';
+  pill.classList.toggle('brilliant', info?.cls === 'brilliant');
+  $('view-review').querySelector('.analyst').classList.toggle('is-brilliant', info?.cls === 'brilliant');
   if (ply === 0) {
     $('analyst-text').innerHTML = `<p>${esc(t('intro'))}</p>${r.meta.opening ? `<p>${esc(t('cm.opening', { name: r.meta.opening }))}</p>` : ''}`;
     $('engine-line').textContent = '';
@@ -295,7 +322,7 @@ function renderReview() {
     if (m.color === 'w' || i === 0) html += `<li class="num">${Math.floor(i / 2) + 1}.</li>`;
     if (i === 0 && m.color === 'b') html += '<li></li>';
     const c = classified[i]?.cls;
-    const sym = c ? `<span class="sym" style="color:${META[c].color}">${META[c].sym}</span>` : '<span class="sym"></span>';
+    const sym = c ? `<span class="sym" style="color:${META[c].color}">${META[c].sym}${META[c].emoji ? ` ${META[c].emoji}` : ''}</span>` : '<span class="sym"></span>';
     html += `<li><button type="button" data-ply="${i + 1}" class="${ply === i + 1 ? 'active' : ''}">${esc(m.san)}${sym}</button></li>`;
   });
   $('moves').innerHTML = html;
@@ -318,7 +345,7 @@ function renderReview() {
   $('summary').innerHTML = `<div class="summary">
     <span></span><span class="h">${esc(playerName('w'))}</span><span class="h">${esc(playerName('b'))}</span>
     <span class="lbl">${esc(t('Accuracy'))}</span><span class="acc">${acc('w')}</span><span class="acc">${acc('b')}</span>
-    ${CLASSES.map((k) => `<span class="lbl"><span class="ico" style="background:${META[k].color}">${META[k].sym}</span>${esc(t(`cls.${k}`))}</span>${cell('w', k)}${cell('b', k)}`).join('')}
+    ${CLASSES.map((k) => `<span class="lbl"><span class="ico" style="background:${META[k].color}">${META[k].emoji || META[k].sym}</span>${esc(t(`cls.${k}`))}</span>${cell('w', k)}${cell('b', k)}`).join('')}
   </div>`;
 }
 

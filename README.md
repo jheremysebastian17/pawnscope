@@ -18,6 +18,8 @@
 - **Move classification** — Brilliant `!!`, Great `!`, Best `★`, Excellent, Good, Inaccuracy `?!`, Mistake `?`, Miss, Blunder `??` and Forced, based on the change in win probability.
 - **Analyst** — explains each move in plain language: what it does, the better alternative, pieces left hanging, missed or allowed mates, and the engine line.
 - **Board annotations** — arrow for the played move in its classification colour, a badge with its symbol, and a green arrow for the engine's best move.
+- **Brilliant moves 💎** — detected when a near-best move sacrifices material (taken or merely offered), and celebrated with a crystal shockwave, flying diamonds and a chime.
+- **Sounds** — a wooden "tock" for every move and a sharper knock for captures, synthesised with the Web Audio API (no audio files). Can be muted.
 - **Accuracy & summary** — per-player accuracy and count of each move type, evaluation bar and clickable evaluation graph.
 - **5 languages** (ES, EN, CA, FR, DE), **light/dark theme**, **responsive** layout, keyboard navigation (← → Home End).
 - Analyses are cached in your browser, so reopening a game is instant.
@@ -35,7 +37,7 @@ Each engine score is converted to a win probability (Lichess model). The drop in
 | < 20 | Mistake |
 | ≥ 20 | Blunder |
 
-Special cases: **Brilliant** = a near-best move that sacrifices material (still ≥ 2 points down after the opponent's best reply); **Great** = the best move when the second-best line is much worse; **Miss** = failing to punish the opponent's mistake; **Forced** = the only legal move. Move accuracy uses the Lichess formula.
+Special cases: **Brilliant** = a near-best move that sacrifices material (still ≥ 2 points down after the opponent's best reply, or leaving material that the opponent could win even after our recapture); **Great** = the best move when the second-best line is much worse; **Miss** = failing to punish the opponent's mistake; **Forced** = the only legal move. Move accuracy uses the Lichess formula.
 
 ## Run locally
 
@@ -63,6 +65,7 @@ js/engine.js          Stockfish UCI wrapper (Web Worker)
 js/chesscom.js        Chess.com public API client
 js/board.js           SVG board, arrows and badges
 js/graph.js           Evaluation graph
+js/fx.js              Move/capture sounds and the brilliant-move effect
 js/i18n.js            Translations
 vendor/               Stockfish 18 lite (WASM), chess.js
 tests/run.mjs         Unit tests (Node.js)
